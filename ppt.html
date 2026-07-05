@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>市场分析 - 牙膏行业</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ====== 加载动画 ====== */
+    #loading-screen {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 99999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--aero-sky);
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #loading-screen.hide { opacity: 0; visibility: hidden; }
+    .loading-spinner {
+      width: 48px; height: 48px;
+      border: 4px solid rgba(0,162,232,0.2);
+      border-top-color: #00a2e8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { margin-top: 16px; color: #00a2e8; font-size: 16px; font-weight: 600; letter-spacing: 1px; }
+    :root {
+      /* Frutiger Aero 调色盘 */
+      --color-bg: #e8f4f8;
+      --color-bg-light: #f0f9ff;
+      --color-bg-card: rgba(255,255,255,0.85);
+      --color-bg-dark: #1a6b3c;
+      --color-text-primary: #1a3a4a;
+      --color-text-body: #3a6a7a;
+      --color-text-meta: rgba(26,58,74,0.56);
+      --color-text-nav: rgba(26,58,74,0.85);
+      --color-text-white: #ffffff;
+      /* Aero 主色 */
+      --color-blue: #00a2e8;
+      --color-blue-light: #5ec4f0;
+      --color-blue-dark: #0078b4;
+      --color-green: #7ac143;
+      --color-green-light: #a8d86e;
+      --color-green-dark: #4a8a20;
+      --color-orange: #f5a623;
+      --color-yellow: #f7e04d;
+      --color-link: #0092d1;
+      --color-link-hover: #00bfff;
+      --color-accent: #00a2e8;
+      /* Aero 渐变 */
+      --aero-sky: linear-gradient(180deg, #60c8f0 0%, #80d8f8 20%, #b8e8b0 50%, #80d060 80%, #60c040 100%);
+      --aero-glass: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
+      --aero-btn: linear-gradient(180deg, #5ec4f0 0%, #00a2e8 50%, #0078b4 100%);
+      --aero-btn-green: linear-gradient(180deg, #a8d86e 0%, #7ac143 50%, #4a8a20 100%);
+      --aero-card: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(220,240,255,0.75) 100%);
+      --font-display: "Segoe UI","SF Pro Display","Frutiger","Helvetica Neue",Arial,sans-serif;
+      --font-text: "Segoe UI","SF Pro Text","Frutiger","Helvetica Neue",Arial,sans-serif;
+      --font-cn: "Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;
+    }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      font-family: var(--font-cn); font-size: 17px; font-weight: 400;
+      line-height: 25px; color: var(--color-text-primary);
+      background: var(--aero-sky); -webkit-font-smoothing: antialiased;
+    }
+    .global-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+      height: 44px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(200,230,255,0.7) 100%);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      display: flex; justify-content: center; align-items: center;
+      gap: 36px; border-bottom: 1px solid rgba(0,162,232,0.2);
+      box-shadow: 0 2px 12px rgba(0,162,232,0.1);
+    }
+    .global-nav a {
+      font-family: var(--font-text); font-size: 12px; font-weight: 600;
+      color: var(--color-text-nav); letter-spacing: -0.12px;
+      text-decoration: none; padding: 0 8px; transition: color .2s ease;
+    }
+    .global-nav a:hover { color: var(--color-blue); }
+    .global-nav .nav-logo { font-size: 17px; font-weight: 600; letter-spacing: -0.374px; color: var(--color-text-nav); }
+    .global-nav .nav-logo span { color: var(--color-blue); }
+    .slides-wrapper { position: relative; width: 100vw; height: 100vh; }
+    .slide {
+      position: absolute; inset: 0; opacity: 0; pointer-events: none; z-index: 1;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; z-index: 10; }
+    .slide-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .nav-btn {
+      position: fixed; top: 50%; transform: translateY(-50%); z-index: 1500;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(200,230,255,0.8) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(0,162,232,0.3); color: var(--color-blue-dark);
+      font-family: var(--font-text); font-size: 18px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .25s ease;
+      box-shadow: 0 4px 16px rgba(0,162,232,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
+      line-height: 1;
+    }
+    .nav-btn:hover {
+      background: linear-gradient(180deg, #fff 0%, #b0e0f0 100%);
+      box-shadow: 0 6px 24px rgba(0,162,232,0.25), inset 0 1px 0 rgba(255,255,255,0.9);
+      transform: translateY(-50%) scale(1.05);
+    }
+    .nav-btn:active { transform: translateY(-50%) scale(0.92); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; background: rgba(255,255,255,0.5); box-shadow: none; transform: translateY(-50%); }
+    #btnPrev { left: 16px; } #btnNext { right: 16px; }
+    .page-indicator {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1500;
+      font-family: var(--font-text); font-size: 13px; font-weight: 600;
+      color: rgba(255,255,255,0.9); letter-spacing: 0.05em;
+      text-shadow: 0 1px 4px rgba(0,100,160,0.3);
+      background: rgba(0,162,232,0.25); backdrop-filter: blur(8px);
+      padding: 6px 16px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+      z-index: 1501;
+      transition: width .5s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 0 8px rgba(0,162,232,0.4);
+    }
+    
+    /* Frutiger Aero 装饰层 */
+    .aero-bubbles {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .aero-bubble {
+      position: absolute; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 40%, transparent 70%);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: inset 0 -2px 6px rgba(0,162,232,0.1), 0 2px 8px rgba(0,162,232,0.08);
+    }
+    .aero-bubble:nth-child(1) { width: 80px; height: 80px; top: 8%; left: 5%; opacity: 0.6; animation: floatBubble 6s ease-in-out infinite; }
+    .aero-bubble:nth-child(2) { width: 50px; height: 50px; top: 15%; right: 8%; opacity: 0.5; animation: floatBubble 8s ease-in-out infinite 1s; }
+    .aero-bubble:nth-child(3) { width: 35px; height: 35px; bottom: 20%; left: 12%; opacity: 0.4; animation: floatBubble 7s ease-in-out infinite 2s; }
+    .aero-bubble:nth-child(4) { width: 60px; height: 60px; bottom: 30%; right: 15%; opacity: 0.45; animation: floatBubble 9s ease-in-out infinite 0.5s; }
+    .aero-bubble:nth-child(5) { width: 25px; height: 25px; top: 40%; left: 3%; opacity: 0.35; animation: floatBubble 5s ease-in-out infinite 3s; }
+    .aero-bubble:nth-child(6) { width: 45px; height: 45px; top: 60%; right: 5%; opacity: 0.4; animation: floatBubble 7.5s ease-in-out infinite 1.5s; }
+    @keyframes floatBubble {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-12px) scale(1.05); }
+    }
+
+    /* Aero 光线 streak */
+    .aero-light-streak {
+      position: absolute; pointer-events: none; z-index: 0;
+      width: 300px; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      transform: rotate(-25deg);
+      opacity: 0.4;
+    }
+    .aero-light-streak.s1 { top: 15%; left: 10%; }
+    .aero-light-streak.s2 { top: 55%; right: 5%; width: 200px; transform: rotate(15deg); opacity: 0.3; }
+    .aero-light-streak.s3 { bottom: 25%; left: 20%; width: 250px; transform: rotate(-10deg); opacity: 0.25; }
+
+    /* 卡片增强光泽 */
+    .glass-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.7) 70%, transparent 100%);
+      z-index: 2;
+    }
+
+.cover-layout {
+      flex-direction: column; text-align: center; padding: 12vh 10vw;
+      background: transparent;
+      position: relative;
+    }
+    .cover-layout::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.4) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cover-title {
+      font-family: var(--font-display); font-size: clamp(52px,6.5vw,80px); font-weight: 700;
+      color: #fff; letter-spacing: -0.03em; line-height: 1.06; margin-bottom: 24px; text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3);
+      text-shadow: 0 2px 12px rgba(0,100,160,0.3), 0 0 40px rgba(0,162,232,0.2);
+      position: relative; z-index: 1;
+    }
+    .cover-subtitle {
+      font-family: var(--font-display); font-size: clamp(20px,2.2vw,28px); font-weight: 400;
+      color: rgba(255,255,255,0.95); line-height: 1.5; max-width: 600px; letter-spacing: 0.01em; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      text-shadow: 0 1px 8px rgba(0,100,160,0.2);
+      position: relative; z-index: 1;
+    }
+    .content-layout {
+      flex-direction: column; padding: 5vh 8vw;
+      background: transparent;
+      position: relative;
+    }
+    .content-layout::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+      pointer-events: none;
+    }
+    .content-header { margin-bottom: 32px; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .content-label {
+      font-family: var(--font-text); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7);
+      letter-spacing: -0.12px; margin-bottom: 8px; text-transform: uppercase;
+    }
+    .content-title {
+      font-family: var(--font-display); font-size: clamp(28px,3.5vw,40px); font-weight: 600;
+      color: #fff; letter-spacing: -0.28px; line-height: 1.1;
+      text-shadow: 0 1px 8px rgba(0,100,160,0.2);
+    }
+    .content-body { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .content-text {
+      font-family: var(--font-text); font-size: clamp(15px,1.3vw,17px); font-weight: 400;
+      color: rgba(255,255,255,0.9); line-height: 1.47; margin-bottom: 28px; max-width: 800px; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .hover-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 28px; }
+    .hover-card {
+      background: var(--aero-card); border-radius: 16px; padding: 24px;
+      position: relative; overflow: hidden; transition: all .3s cubic-bezier(.4,0,.2,1); cursor: default;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 4px 20px rgba(0,162,232,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .hover-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+      pointer-events: none; border-radius: 16px 16px 0 0;
+    }
+    .hover-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,162,232,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    .hover-card-title { font-family: var(--font-text); font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px; position: relative; z-index: 1; }
+    .hover-card-desc { font-family: var(--font-text); font-size: 13px; font-weight: 400; color: var(--color-text-body); line-height: 1.54; margin-top: 10px; position: relative; z-index: 1; }
+    .data-layout {
+      flex-direction: column; padding: 5vh 8vw;
+      background: transparent;
+      position: relative;
+    }
+    .data-layout::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+      pointer-events: none;
+    }
+    .data-header { margin-bottom: 32px; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .data-label { font-family: var(--font-text); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); letter-spacing: -0.12px; margin-bottom: 8px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .data-title { font-family: var(--font-display); font-size: clamp(28px,3.5vw,40px); font-weight: 600; color: #fff; letter-spacing: -0.28px; line-height: 1.1; text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3); }
+    .data-subtitle { font-family: var(--font-text); font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.8); margin-top: 6px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+    .data-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; flex: 1; align-content: center; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .data-card {
+      background: var(--aero-card); border-radius: 16px; padding: 28px 24px; text-align: center;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 4px 20px rgba(0,162,232,0.1), inset 0 1px 0 rgba(255,255,255,0.9); position: relative; overflow: hidden;
+    }
+    .data-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+      pointer-events: none; border-radius: 16px 16px 0 0;
+    }
+    .data-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,162,232,0.2); }
+    .data-card-value { font-family: var(--font-display); font-size: clamp(32px,4vw,48px); font-weight: 600; color: var(--color-blue-dark); line-height: 1.083; margin-bottom: 4px; letter-spacing: -0.28px; position: relative; z-index: 1; }
+    .data-card-unit { font-family: var(--font-text); font-size: 14px; font-weight: 400; color: var(--color-text-body); margin-bottom: 16px; position: relative; z-index: 1; }
+    .data-card-bar { width: 100%; height: 6px; background: rgba(0,162,232,0.1); border-radius: 3px; overflow: hidden; position: relative; z-index: 1; }
+    .data-card-bar-fill { height: 100%; background: var(--aero-btn); border-radius: 3px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+    .data-card-label { font-family: var(--font-text); font-size: 13px; font-weight: 400; color: var(--color-text-body); margin-top: 10px; position: relative; z-index: 1; }
+    .data-footnote { margin-top: 24px; font-family: var(--font-text); font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.6); text-align: center; position: relative; z-index: 1; }
+    .insight-card {
+      background: linear-gradient(135deg, rgba(0,162,232,0.3) 0%, rgba(122,193,67,0.3) 100%);
+      border-radius: 16px; padding: 28px 32px; margin-top: 20px; max-width: 960px; width: 100%;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 20px rgba(0,162,232,0.15);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      position: relative; z-index: 1;
+    }
+    .insight-card-title { font-family: var(--font-text); font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .insight-card-text { font-family: var(--font-text); font-size: 14px; font-weight: 400; line-height: 1.54; color: rgba(255,255,255,0.9); }
+    .profile-overview-layout {
+      flex-direction: column; padding: 5vh 8vw;
+      background: transparent;
+      position: relative;
+    }
+    .profile-overview-layout::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+      pointer-events: none;
+    }
+    .profile-header { margin-bottom: 28px; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .profile-label { font-family: var(--font-text); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); letter-spacing: -0.12px; margin-bottom: 8px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .profile-title { font-family: var(--font-display); font-size: clamp(28px,3.5vw,40px); font-weight: 600; color: #fff; letter-spacing: -0.28px; line-height: 1.1; text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3); }
+    .profile-highlights { display: flex; gap: 20px; justify-content: center; margin-bottom: 32px; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .profile-highlight {
+      flex: 1; text-align: center; padding: 24px 16px;
+      background: var(--aero-card); border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 4px 20px rgba(0,162,232,0.1), inset 0 1px 0 rgba(255,255,255,0.9); position: relative; overflow: hidden;
+    }
+    .profile-highlight::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+      pointer-events: none; border-radius: 16px 16px 0 0;
+    }
+    .profile-highlight-value { font-family: var(--font-display); font-size: clamp(36px,4vw,48px); font-weight: 600; color: var(--color-blue-dark); letter-spacing: -0.28px; line-height: 1.083; margin-bottom: 4px; position: relative; z-index: 1; }
+    .profile-highlight-label { font-family: var(--font-text); font-size: 14px; font-weight: 400; color: var(--color-text-body); position: relative; z-index: 1; }
+    .profile-highlight-desc { font-family: var(--font-text); font-size: 12px; font-weight: 400; color: var(--color-text-meta); margin-top: 8px; line-height: 1.4; position: relative; z-index: 1; }
+    .profile-trait-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .profile-trait {
+      position: relative; display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+      background: var(--aero-card); border-radius: 12px; transition: background .2s ease; cursor: default;
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 2px 12px rgba(0,162,232,0.08);
+    }
+    .profile-trait:hover { background: rgba(255,255,255,0.95); z-index: 100; box-shadow: 0 4px 20px rgba(0,162,232,0.15); }
+    .profile-trait-header { display: flex; align-items: center; gap: 12px; width: 100%; }
+    .profile-trait-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--aero-btn); color: #fff; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-family: var(--font-text); cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease;
+      box-shadow: 0 2px 8px rgba(0,162,232,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .profile-trait-icon:hover { transform: scale(1.1); box-shadow: 0 4px 16px rgba(0,162,232,0.4); }
+    .profile-trait-info { flex: 1; min-width: 0; }
+    .profile-trait-title { font-family: var(--font-text); font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+    .profile-trait-sub { font-family: var(--font-text); font-size: 12px; font-weight: 400; color: var(--color-text-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Floating card overlay */
+    .card-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,100,160,0.15);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    }
+    .card-overlay.active { opacity: 1; }
+    .floating-card {
+      background: var(--aero-card); border-radius: 24px; padding: 40px 44px;
+      max-width: 600px; width: 90vw;
+      box-shadow: 0 25px 60px rgba(0,100,160,0.2), 0 0 0 1px rgba(255,255,255,0.5);
+      transform: scale(0.95) translateY(16px);
+      transition: transform .35s cubic-bezier(.23,1,.32,1);
+      max-height: 80vh; overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.6);
+      position: relative;
+    }
+    .floating-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+      pointer-events: none; border-radius: 24px 24px 0 0;
+    }
+    .card-overlay.active .floating-card { transform: scale(1) translateY(0); }
+    .floating-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: var(--aero-btn); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,162,232,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+      position: relative; z-index: 1;
+    }
+    .floating-icon svg { width: 24px; height: 24px; }
+    .floating-title {
+      font-family: var(--font-display); font-size: 28px; font-weight: 700;
+      color: var(--color-text-primary); margin-bottom: 4px; letter-spacing: -0.02em;
+      position: relative; z-index: 1;
+    }
+    .floating-sub {
+      font-family: var(--font-text); font-size: 15px; font-weight: 400;
+      color: var(--color-text-body); margin-bottom: 28px;
+      position: relative; z-index: 1;
+    }
+    .floating-chart-legend { display: flex; gap: 20px; margin-bottom: 16px; position: relative; z-index: 1; }
+    .floating-chart-legend-item { display: flex; align-items: center; gap: 6px; font-family: var(--font-text); font-size: 13px; color: var(--color-text-body); }
+    .floating-chart-legend-dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+    .floating-chart-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; position: relative; z-index: 1; }
+    .floating-chart-label { width: 90px; flex-shrink: 0; font-family: var(--font-text); font-size: 13px; color: var(--color-text-primary); text-align: right; }
+    .floating-chart-bars { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .floating-chart-bar-wrap { display: flex; align-items: center; gap: 6px; }
+    .floating-chart-bar { height: 14px; border-radius: 7px; min-width: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); }
+    .floating-chart-bar.female { background: var(--aero-btn); }
+    .floating-chart-bar.male { background: linear-gradient(180deg, var(--color-orange), #e09020); }
+    .floating-chart-pct { font-size: 13px; font-weight: 600; color: var(--color-text-body); width: 36px; font-family: var(--font-text); }
+    .floating-occ-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; position: relative; z-index: 1; }
+    .floating-occ-label { width: 100px; flex-shrink: 0; font-family: var(--font-text); font-size: 13px; color: var(--color-text-primary); text-align: right; }
+    .floating-occ-bar { height: 14px; border-radius: 7px; min-width: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); }
+    .floating-occ-pct { font-size: 13px; font-weight: 600; color: var(--color-text-body); width: 36px; font-family: var(--font-text); }
+    .floating-text-body { font-family: var(--font-text); font-size: 15px; color: var(--color-text-body); line-height: 1.7; position: relative; z-index: 1; }
+    .floating-text-body strong { color: var(--color-text-primary); }
+    .floating-list { list-style: none; padding: 0; position: relative; z-index: 1; }
+    .floating-list li {
+      font-family: var(--font-text); font-size: 15px;
+      color: var(--color-text-body); line-height: 1.6;
+      padding: 7px 0 7px 20px; position: relative;
+    }
+    .floating-list li::before {
+      content: ''; position: absolute; left: 0; top: 14px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--aero-btn);
+      box-shadow: 0 1px 4px rgba(0,162,232,0.3);
+    }
+    .split-layout {
+      flex-direction: row; padding: 5vh 6vw;
+      background: transparent;
+      gap: 40px; align-items: stretch;
+      position: relative;
+    }
+    .split-layout::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      pointer-events: none;
+    }
+    .split-half { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; position: relative; z-index: 1; }
+    .split-half .chart-header { margin-bottom: 20px; }
+    .split-half .chart-title { font-size: clamp(20px,2.2vw,28px); }
+    .split-chart-bars { display: flex; flex-direction: column; gap: 8px; }
+    .split-bar-row { display: flex; align-items: center; gap: 10px; }
+    .split-bar-label { width: 80px; flex-shrink: 0; font-family: var(--font-text); font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.9); text-align: right; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .split-bar-group { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .split-bar { height: 12px; border-radius: 6px; transition: width 1s cubic-bezier(.4,0,.2,1); min-width: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.3); }
+    .split-bar.female { background: var(--color-blue); }
+    .split-bar.male { background: rgb(255,159,10); }
+    .split-bar-pct { font-family: var(--font-text); font-size: 11px; font-weight: 600; color: var(--color-text-body); width: 28px; }
+    .split-age-bars { display: flex; align-items: flex-end; gap: 8px; height: 180px; margin: auto 0; }
+    .split-age-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+    .split-age-pct { font-family: var(--font-text); font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
+    .split-age-bar { width: 100%; max-width: 36px; border-radius: 5px 5px 2px 2px; background: var(--color-blue); transition: height 1s cubic-bezier(.4,0,.2,1); }
+    .split-age-label { font-family: var(--font-text); font-size: 11px; font-weight: 400; color: var(--color-text-body); text-align: center; line-height: 1.2; }
+    .chart-layout { flex-direction: column; padding: 5vh 8vw; background: var(--color-bg); }
+    .chart-header { margin-bottom: 24px; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .chart-label { font-family: var(--font-text); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); letter-spacing: -0.12px; margin-bottom: 8px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .chart-title { font-family: var(--font-display); font-size: clamp(24px,3vw,34px); font-weight: 600; color: #fff; letter-spacing: -0.374px; line-height: 1.15; text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3); }
+    .chart-body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px; max-width: 960px; width: 100%; }
+    .chart-row { display: flex; align-items: center; gap: 14px; }
+    .chart-row-label { width: 120px; flex-shrink: 0; font-family: var(--font-text); font-size: 13px; font-weight: 400; color: var(--color-text-primary); text-align: right; }
+    .chart-row-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .chart-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .chart-bar { height: 18px; border-radius: 9px; transition: width 1s cubic-bezier(.4,0,.2,1); min-width: 2px; }
+    .chart-bar.female { background: var(--color-blue); }
+    .chart-bar.male { background: rgb(255,159,10); }
+    .chart-bar-pct { font-family: var(--font-text); font-size: 12px; font-weight: 600; color: var(--color-text-body); width: 32px; }
+    .chart-legend { display: flex; gap: 20px; margin-bottom: 16px; }
+    .chart-legend-item { display: flex; align-items: center; gap: 6px; font-family: var(--font-text); font-size: 12px; font-weight: 400; color: var(--color-text-body); }
+    .chart-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .chart-source { margin-top: 16px; font-family: var(--font-text); font-size: 12px; font-weight: 400; color: rgba(0,0,0,0.48); }
+    .age-bars { display: flex; align-items: flex-end; gap: 12px; height: 200px; padding: 0 12px; max-width: 720px; width: 100%; margin: 0 auto; }
+    .age-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .age-bar-pct { font-family: var(--font-text); font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+    .age-bar { width: 100%; max-width: 48px; border-radius: 6px 6px 3px 3px; background: var(--color-blue); transition: height 1s cubic-bezier(.4,0,.2,1); }
+    .age-bar-label { font-family: var(--font-text); font-size: 12px; font-weight: 400; color: var(--color-text-body); text-align: center; line-height: 1.3; }
+    .age-bar-sub { font-family: var(--font-text); font-size: 11px; font-weight: 400; color: rgba(0,0,0,0.48); text-align: center; }
+    .occ-layout { display: flex; gap: 36px; align-items: center; justify-content: center; }
+    .occ-chart { width: 180px; height: 180px; position: relative; }
+    .occ-list { display: flex; flex-direction: column; gap: 10px; }
+    .occ-item { display: flex; align-items: center; gap: 8px; }
+    .occ-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .occ-name { font-family: var(--font-text); font-size: 13px; font-weight: 400; color: var(--color-text-primary); }
+    .occ-pct { font-family: var(--font-text); font-size: 13px; font-weight: 600; color: var(--color-text-body); margin-left: auto; }
+    .trend-layout { flex-direction: column; padding: 5vh 8vw; background: var(--color-bg); }
+    .trend-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 24px; max-width: 960px; width: 100%; }
+    .trend-card { background: var(--color-bg-card); border-radius: 12px; padding: 24px; transition: all .3s cubic-bezier(.4,0,.2,1); }
+    .trend-card:hover { transform: translateY(-2px); }
+    .trend-card-num { font-family: var(--font-display); font-size: clamp(24px,2.8vw,36px); font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px; letter-spacing: -0.28px; }
+    .trend-card-label { font-family: var(--font-text); font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 6px; }
+    .trend-card-desc { font-family: var(--font-text); font-size: 13px; font-weight: 400; color: var(--color-text-body); line-height: 1.54; }
+    .ending-layout { flex-direction: column; text-align: center; padding: 12vh 10vw; background: var(--color-bg-dark); }
+    .ending-title { font-family: var(--font-display); font-size: clamp(36px,4.5vw,56px); font-weight: 600; color: rgb(245,245,247); letter-spacing: -0.28px; line-height: 1.07; margin-bottom: 12px; }
+    .ending-subtitle { font-family: var(--font-text); font-size: clamp(16px,1.6vw,21px); font-weight: 400; color: rgba(255,255,255,0.6); max-width: 560px; line-height: 1.19; }
+    .ending-divider { width: 40px; height: 1px; background: rgba(255,255,255,0.2); margin: 28px auto; }
+    .ending-meta { font-family: var(--font-text); font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.4); margin-top: 28px; }
+    @media (max-width: 900px) {
+      .hover-cards, .data-cards, .trend-cards { grid-template-columns: 1fr; }
+      .profile-highlights { flex-direction: column; }
+      .profile-trait-grid { grid-template-columns: 1fr 1fr; }
+      .split-layout { flex-direction: column; }
+      .chart-row { flex-direction: column; align-items: flex-start; }
+      .chart-row-label { width: auto; text-align: left; }
+      .occ-layout { flex-direction: column; }
+  
+    }
+
+    /* === Design System Slides === */
+    .ds-layout {
+      flex-direction: column; padding: 5vh 8vw;
+      background: transparent;
+      position: relative;
+    }
+    .ds-layout::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 100%);
+      pointer-events: none;
+    }
+    .ds-header { margin-bottom: 28px; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+    .ds-label { font-family: var(--font-text); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); letter-spacing: -0.12px; margin-bottom: 8px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+    .ds-title { font-family: var(--font-display); font-size: clamp(28px,3.5vw,40px); font-weight: 600; color: #fff; letter-spacing: -0.28px; line-height: 1.1; text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.3); }
+    .ds-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; max-width: 960px; width: 100%; position: relative; z-index: 1; }
+
+    /* Color palette */
+    .color-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-top: 20px; }
+    .color-swatch {
+      border-radius: 14px; overflow: hidden; transition: transform .25s ease; cursor: default;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 4px 16px rgba(0,162,232,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .color-swatch:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,162,232,0.2); }
+    .color-block { height: 72px; border-radius: 14px 14px 0 0; }
+    .color-info { padding: 10px 12px; }
+    .color-name { font-family: var(--font-text); font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+    .color-hex { font-family: 'SF Mono',Menlo,monospace; font-size: 12px; font-weight: 400; color: var(--color-text-body); margin-top: 2px; }
+
+    /* Glass effect demo */
+    .glass-demo-row { display: flex; gap: 16px; margin-top: 20px; }
+    .glass-demo-card {
+      flex: 1; padding: 28px 24px; border-radius: 18px; position: relative; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 20px rgba(0,162,232,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+    .glass-demo-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%); pointer-events: none; border-radius: 18px 18px 0 0; }
+    .glass-demo-title { font-family: var(--font-text); font-size: 14px; font-weight: 600; color: var(--color-text-primary); margin-bottom: 6px; position: relative; z-index: 1; }
+    .glass-demo-value { font-family: var(--font-display); font-size: 24px; font-weight: 600; color: var(--color-blue-dark); position: relative; z-index: 1; }
+    .glass-demo-desc { font-family: var(--font-text); font-size: 12px; color: var(--color-text-body); margin-top: 6px; position: relative; z-index: 1; }
+
+    /* Radius & Typography */
+    .radius-row { display: flex; gap: 16px; margin-top: 20px; align-items: flex-end; }
+    .radius-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .radius-shape { background: rgba(0,162,232,0.12); border: 2px solid var(--color-blue); }
+    .radius-label { font-family: var(--font-text); font-size: 12px; color: rgba(255,255,255,0.8); }
+
+    .type-scale { margin-top: 20px; }
+    .type-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .type-sample { flex: 1; }
+    .type-meta { width: 160px; flex-shrink: 0; font-family: var(--font-text); font-size: 12px; color: rgba(255,255,255,0.6); text-align: right; }
+
+    /* Page structure */
+    .page-flow { display: flex; align-items: center; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .page-flow-item {
+      padding: 12px 20px; border-radius: 14px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 2px 12px rgba(0,162,232,0.08);
+      font-family: var(--font-text); font-size: 13px; font-weight: 500; color: var(--color-text-primary); text-align: center; min-width: 80px;
+    }
+    .page-flow-arrow { font-size: 18px; color: rgba(255,255,255,0.5); }
+
+    /* Component grid */
+    .comp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 20px; }
+    .comp-card {
+      background: rgba(255,255,255,0.85); border-radius: 14px; padding: 20px; text-align: center;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 4px 16px rgba(0,162,232,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .comp-icon { margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
+    .comp-name { font-family: var(--font-text); font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+    .comp-desc { font-family: var(--font-text); font-size: 11px; color: var(--color-text-body); margin-top: 4px; line-height: 1.4; }
+
+    /* Variable table */
+    .var-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .var-table th, .var-table td { padding: 8px 12px; text-align: left; font-family: var(--font-text); font-size: 13px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .var-table th { font-weight: 600; color: var(--color-text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .var-table td { color: var(--color-text-body); }
+    .var-table code { font-family: 'SF Mono',Menlo,monospace; font-size: 12px; background: rgba(0,113,227,0.08); padding: 2px 6px; border-radius: 4px; color: var(--color-blue); }
+
+    /* === Liquid Glass Demo Slide === */
+    .glass-scene {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #5ec4f0 0%, #3aa8e0 20%, #7ac143 50%, #4a9a28 80%, #2080b0 100%);
+      overflow: hidden;
+    }
+    .glass-scene .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .glass-scene .orb-1 { width: 320px; height: 320px; background: rgba(255,255,255,0.35); top: -80px; left: -60px; animation-delay: 0s; }
+    .glass-scene .orb-2 { width: 260px; height: 260px; background: rgba(255,255,255,0.25); top: 40%; right: -40px; animation-delay: -2s; }
+    .glass-scene .orb-3 { width: 200px; height: 200px; background: rgba(247,224,77,0.3); bottom: -40px; left: 30%; animation-delay: -4s; }
+    .glass-scene .orb-4 { width: 180px; height: 180px; background: rgba(168,216,255,0.35); top: 20%; left: 50%; animation-delay: -6s; }
+    .glass-scene .orb-5 { width: 140px; height: 140px; background: rgba(168,236,106,0.3); bottom: 20%; right: 20%; animation-delay: -3s; }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.05); }
+      66% { transform: translate(-20px, 15px) scale(0.95); }
+    }
+
+    .glass-scene .scene-content {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 4vh 6vw;
+    }
+
+    .glass-showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .glass-row {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .glass-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .glass-card {
+      border-radius: 20px;
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-6px) scale(1.02);
+    }
+    /* 顶部高光带 */
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 30%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.6) 70%, transparent 100%);
+      z-index: 2;
+    }
+    /* 内部顶部渐变高光 */
+    .glass-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+      pointer-events: none;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .glass-card-label {
+      font-family: var(--font-text);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 8px;
+      position: relative; z-index: 1;
+    }
+    .glass-card-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      position: relative; z-index: 1;
+    }
+    .glass-card-value {
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 12px;
+      position: relative; z-index: 1;
+    }
+    .glass-card-body {
+      font-family: var(--font-text);
+      font-size: 13px;
+      line-height: 1.6;
+      position: relative; z-index: 1;
+    }
+
+    /* 玻璃变体 */
+    .glass-variant-heavy {
+      background: rgba(255,255,255,0.22);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
+      border: 1px solid rgba(255,255,255,0.35);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+      color: #fff;
+    }
+
+    .glass-variant-medium {
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    .glass-variant-light {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px) saturate(150%);
+      -webkit-backdrop-filter: blur(8px) saturate(150%);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .glass-variant-mint {
+      background: linear-gradient(135deg, rgba(167,243,208,0.2), rgba(58,141,94,0.15));
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(167,243,208,0.25);
+      box-shadow: 0 8px 32px rgba(58,141,94,0.15), inset 0 1px 0 rgba(255,255,255,0.25);
+      color: #fff;
+    }
+
+    .glass-variant-gradient {
+      background: linear-gradient(145deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+      backdrop-filter: blur(20px) saturate(200%);
+      -webkit-backdrop-filter: blur(20px) saturate(200%);
+      border: 1px solid rgba(255,255,255,0.28);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4);
+      color: #fff;
+    }
+
+    .glass-variant-inner-glow {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px) saturate(160%);
+      -webkit-backdrop-filter: blur(12px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1), inset 0 0 40px rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.92);
+    }
+
+    .glass-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+      margin-bottom: 4px;
+      position: relative; z-index: 1;
+    }
+    .glass-tag-blur { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); }
+    .glass-tag-border { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); }
+    .glass-tag-shadow { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
+
+    .glass-center-title {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 0 20px 8px;
+    }
+    .glass-center-title h2 {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .glass-center-title p {
+      font-family: var(--font-text);
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* 手机模拟框 */
+    .phone-mock {
+      grid-column: 2;
+      width: 220px;
+      margin: 0 auto;
+      background: rgba(0,0,0,0.4);
+      border-radius: 28px;
+      padding: 12px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .phone-screen {
+      border-radius: 18px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #3A8D5E 0%, #1D6B3E 40%, #1a472a 100%);
+      padding: 16px 12px;
+      position: relative;
+    }
+    .phone-screen::before {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 100px; height: 100px;
+      background: rgba(167,243,208,0.3);
+      border-radius: 50%;
+      filter: blur(30px);
+    }
+    .phone-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 14px;
+      position: relative; z-index: 1;
+    }
+    .phone-logo {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .phone-brand { font-size: 13px; font-weight: 700; color: #fff; }
+    .phone-search {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 12px;
+      position: relative; z-index: 1;
+    }
+    .phone-card {
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+      position: relative; z-index: 1;
+    }
+    .phone-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%);
+      border-radius: 12px 12px 0 0;
+      pointer-events: none;
+    }
+    .phone-card-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px; position: relative; z-index: 1; }
+    .phone-card-text { font-size: 10px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+    .phone-card-price { font-size: 14px; font-weight: 700; color: #E8534A; margin-top: 6px; position: relative; z-index: 1; }
+    .phone-tab-bar {
+      display: flex; justify-content: space-around;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 8px 0;
+      margin-top: 8px;
+      position: relative; z-index: 1;
+    }
+    .phone-tab { font-size: 9px; color: rgba(255,255,255,0.5); text-align: center; }
+    .phone-tab.active { color: #fff; font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .color-grid { grid-template-columns: repeat(2,1fr); }
+      .glass-demo-row { flex-direction: column; }
+      .radius-row { flex-wrap: wrap; }
+      .comp-grid { grid-template-columns: repeat(2,1fr); }
+      .phone-mock { flex: 0 0 200px; }
+    }
+  </style>
+</head>
+<body>
+<!-- ====== 加载动画 ====== -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">市场分析 · 牙膏行业</div>
+</div>
+  <!-- 导航栏控件已移除 -->
+  <div class="progress-bar" id="progressBar"></div>
+  <div class="slides-wrapper">
+    <!-- Slide 1: Cover -->
+    <div class="slide active" data-index="0">
+      <div class="slide-inner cover-layout">
+<div style="position:absolute;top:10%;right:8%;z-index:0;opacity:0.15;transform:rotate(15deg);">
+  <svg width="120" height="120" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75"/>
+  </svg>
+</div>
+<div style="position:absolute;bottom:15%;left:6%;z-index:0;opacity:0.1;transform:rotate(-30deg) scale(0.7);">
+  <svg width="120" height="120" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75"/>
+  </svg>
+</div>
+        <h1 class="cover-title">市场分析</h1>
+        <p class="cover-subtitle">中国口腔护理市场 · 牙膏行业深度洞察</p>
+      </div>
+    </div>
+    <!-- Slide 2: 1.1 市场背景 -->
+    <div class="slide" data-index="1">
+      <div class="slide-inner content-layout">
+<div class="aero-bubbles">
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+</div>
+<div class="aero-light-streak s1"></div>
+<div class="aero-light-streak s2"></div>
+<div class="aero-light-streak s3"></div>
+        <div class="content-header">
+          <div class="content-label">1.1</div>
+          <h2 class="content-title">牙膏总体市场背景</h2>
+        </div>
+        <div class="content-body">
+          <p class="content-text">中国口腔护理市场持续增长，消费者从"基础清洁"转向"功效护理"。年轻消费群体更加注重美白、清新口气、成分安全、高颜值包装和性价比。</p>
+          <div class="hover-cards">
+            <div class="hover-card">
+              <div class="hover-card-title">市场总览</div>
+              <div class="hover-card-desc">中国是全球最大的牙膏生产国和消费国。截至2025年，中国牙膏市场的零售额已达到约566亿元人民币，整体市场呈现平稳上扬的态势。</div>
+            </div>
+            <div class="hover-card">
+              <div class="hover-card-title">消费者洞察</div>
+              <div class="hover-card-desc">随着国民口腔健康意识的提升与消费升级，消费者对牙膏的需求已从最初单纯的"基础清洁"转向追求预防和改善口腔问题的"精准功效护理"。防蛀、抗敏感、美白固齿以及牙周/牙龈修复等针对性诉求已成为选购决策的首要考量。</div>
+            </div>
+            <div class="hover-card">
+              <div class="hover-card-title">年轻群体</div>
+              <div class="hover-card-desc">在年轻消费群体中，牙膏已从单一的"生活必需品"转变为兼具社交与情绪价值的"美妆化快消品"。他们不仅极度看重"美白"与"清新口气"等立竿见影的社交功效，更在决策中展现出理性与审美的双重追求。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 3: 1.2 市场存量 -->
+    <div class="slide" data-index="2">
+      <div class="slide-inner data-layout">
+<div class="aero-bubbles">
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+</div>
+<div class="aero-light-streak s1"></div>
+<div class="aero-light-streak s2"></div>
+<div class="aero-light-streak s3"></div>
+        <div class="data-header">
+          <div class="data-label">1.2</div>
+          <h2 class="data-title">市场存量</h2>
+          <p class="data-subtitle">全行业大盘 · 国内牙膏零售额</p>
+        </div>
+        <div class="data-cards">
+          <div class="data-card">
+            <div class="data-card-value">410</div>
+            <div class="data-card-unit">亿元人民币</div>
+            <div class="data-card-bar"><div class="data-card-bar-fill" style="width:72%"></div></div>
+            <div class="data-card-label">2025年国内牙膏整体存量</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-value">6%</div>
+            <div class="data-card-unit">年增速</div>
+            <div class="data-card-bar"><div class="data-card-bar-fill" style="width:60%"></div></div>
+            <div class="data-card-label">行业整体增长率</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-value">520</div>
+            <div class="data-card-unit">亿元（2030年预估）</div>
+            <div class="data-card-bar"><div class="data-card-bar-fill" style="width:92%"></div></div>
+            <div class="data-card-label">2030年有望突破</div>
+          </div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-card-title">行业特征</div>
+          <div class="insight-card-text">总量存量饱和、销量基本不涨，靠涨价/产品升级拉动营收上涨。人均年牙膏消耗量固定，刚需天花板到顶。在中国，该买牙膏的人早就都在买了，市场上没有还未被开发的新人群。</div>
+        </div>
+        <p class="data-footnote">数据来源：欧睿 / 口腔护理协会</p>
+      </div>
+    </div>
+    <!-- Slide 4: 1.3 整体趋势 -->
+    <div class="slide" data-index="3">
+      <div class="slide-inner trend-layout">
+        <div class="content-header">
+          <div class="content-label">1.3</div>
+          <h2 class="content-title">整体趋势</h2>
+          <p class="data-subtitle" style="margin-top:6px;">总量存量持平 · 结构性上涨</p>
+        </div>
+        <div class="trend-cards">
+          <div class="trend-card">
+            <div class="trend-card-num">+3%</div>
+            <div class="trend-card-label">整体销量</div>
+            <div class="trend-card-desc">平稳微涨，接近存量饱和。人口固定、人均用量稳定，很难靠多卖牙膏冲量。</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-card-num">+5~7%</div>
+            <div class="trend-card-label">整体销售额</div>
+            <div class="trend-card-desc">稳步上涨，涨价+高端化驱动。低价基础牙膏萎缩，功效/中高端牙膏占比逐年走高，2025年功效牙膏占68%。</div>
+          </div>
+          <div class="trend-card">
+            <div class="trend-card-num">存量博弈</div>
+            <div class="trend-card-label">行业总结</div>
+            <div class="trend-card-desc">行业从增量市场转向存量博弈市场，销售总额变大靠提价，不靠多卖货。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 5: 用户画像 · 核心数据概览 -->
+    <div class="slide" data-index="4">
+      <div class="slide-inner profile-overview-layout">
+<div class="aero-bubbles">
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+</div>
+<div class="aero-light-streak s1"></div>
+<div class="aero-light-streak s2"></div>
+<div class="aero-light-streak s3"></div>
+        <div class="profile-header">
+          <div class="profile-label">USER PROFILE</div>
+          <h2 class="profile-title">用户画像</h2>
+        </div>
+        <div class="profile-highlights">
+          <div class="profile-highlight">
+            <div class="profile-highlight-value">58%</div>
+            <div class="profile-highlight-label">女性主导决策</div>
+            <div class="profile-highlight-desc">女性用户是家庭口腔护理的核心采购决策者</div>
+          </div>
+          <div class="profile-highlight">
+            <div class="profile-highlight-value">18-35岁</div>
+            <div class="profile-highlight-label">核心消费群体</div>
+            <div class="profile-highlight-desc">在校大学生、职场新人及年轻小家庭</div>
+          </div>
+          <div class="profile-highlight">
+            <div class="profile-highlight-value">58%</div>
+            <div class="profile-highlight-label">下沉市场</div>
+            <div class="profile-highlight-desc">二线及以下城市用户占主导，渠道深耕</div>
+          </div>
+        </div>
+        <div class="profile-trait-grid">
+          <div class="profile-trait">
+            <div class="profile-trait-header">
+              <div class="profile-trait-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></div>
+              <div class="profile-trait-info">
+                <div class="profile-trait-title">性别分布</div>
+                <div class="profile-trait-sub">女性58% · 男性42%</div>
+              </div>
+            </div>
+
+          </div>
+          <div class="profile-trait">
+            <div class="profile-trait-header">
+              <div class="profile-trait-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="9" y1="13" x2="15" y2="13"/></svg></div>
+              <div class="profile-trait-info">
+                <div class="profile-trait-title">年龄结构</div>
+                <div class="profile-trait-sub">18-35岁是核心客群</div>
+              </div>
+            </div>
+          </div>
+          <div class="profile-trait">
+            <div class="profile-trait-header">
+              <div class="profile-trait-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+              <div class="profile-trait-info">
+                <div class="profile-trait-title">职业特征</div>
+                <div class="profile-trait-sub">白领 · 主妇 · 基层从业者</div>
+              </div>
+            </div>
+
+          </div>
+          <div class="profile-trait">
+            <div class="profile-trait-header">
+              <div class="profile-trait-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M10 8v8"/><path d="M14 8v8"/></svg></div>
+              <div class="profile-trait-info">
+                <div class="profile-trait-title">收入水平</div>
+                <div class="profile-trait-sub">中低收入 · 追求质价比</div>
+              </div>
+            </div>
+          </div>
+          <div class="profile-trait">
+            <div class="profile-trait-header">
+              <div class="profile-trait-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              <div class="profile-trait-info">
+                <div class="profile-trait-title">地域分布</div>
+                <div class="profile-trait-sub">二线及以下占58%</div>
+              </div>
+            </div>
+          </div>
+          <div class="profile-trait">
+            <div class="profile-trait-header">
+              <div class="profile-trait-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+              <div class="profile-trait-info">
+                <div class="profile-trait-title">行为偏好</div>
+                <div class="profile-trait-sub">重口碑 · 重实效 · 短链路</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Floating card overlay -->
+        <div class="card-overlay" id="cardOverlay">
+          <div class="floating-card" id="floatingCard">
+            <div class="floating-icon" id="floatIcon"></div>
+            <div class="floating-title" id="floatTitle"></div>
+            <div class="floating-sub" id="floatSub"></div>
+            <div class="floating-body" id="floatBody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: 品牌设计体系概览 -->
+    <div class="slide" data-index="5">
+      <div class="slide-inner ds-layout">
+<div class="aero-bubbles">
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+</div>
+<div class="aero-light-streak s1"></div>
+<div class="aero-light-streak s2"></div>
+<div class="aero-light-streak s3"></div>
+        <div class="ds-header">
+          <div class="ds-label">DESIGN SYSTEM</div>
+          <div class="ds-title">纳爱斯口腔护理 · 品牌设计体系</div>
+        </div>
+        <div class="ds-body">
+          <div class="color-grid">
+            <div class="color-swatch">
+              <div class="color-block" style="background:#3A8D5E"></div>
+              <div class="color-info"><div class="color-name">纳爱斯绿 · 主色</div><div class="color-hex">#3A8D5E</div></div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-block" style="background:#1D6B3E"></div>
+              <div class="color-info"><div class="color-name">深绿</div><div class="color-hex">#1D6B3E</div></div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-block" style="background:#7ABF95"></div>
+              <div class="color-info"><div class="color-name">浅绿</div><div class="color-hex">#7ABF95</div></div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-block" style="background:#E8F5EE"></div>
+              <div class="color-info"><div class="color-name">淡绿背景</div><div class="color-hex">#E8F5EE</div></div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-block" style="background:#E30000"></div>
+              <div class="color-info"><div class="color-name">品牌红 · 仅CTA</div><div class="color-hex">#E30000</div></div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-block" style="background:#F5F0E8"></div>
+              <div class="color-info"><div class="color-name">米色底</div><div class="color-hex">#F5F0E8</div></div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-block" style="background:#A8D8EA"></div>
+              <div class="color-info"><div class="color-name">湖蓝</div><div class="color-hex">#A8D8EA</div></div>
+            </div>
+            <div class="color-swatch">
+              <div class="color-block" style="background:#D4A86A"></div>
+              <div class="color-info"><div class="color-name">金色</div><div class="color-hex">#D4A86A</div></div>
+            </div>
+          </div>
+          <div style="margin-top:24px; display:flex; gap:16px;">
+            <div style="flex:1; padding:16px 20px; background:var(--color-bg-card); border-radius:12px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:4px;">设计系统</div>
+              <div style="font-family:var(--font-text);font-size:13px;color:var(--color-text-body);">方案A 生态自然风 → 液态玻璃改造</div>
+            </div>
+            <div style="flex:1; padding:16px 20px; background:var(--color-bg-card); border-radius:12px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:4px;">画布尺寸</div>
+              <div style="font-family:var(--font-text);font-size:13px;color:var(--color-text-body);">iPhone 15 (393 × 852)</div>
+            </div>
+            <div style="flex:1; padding:16px 20px; background:var(--color-bg-card); border-radius:12px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:4px;">设计语言</div>
+              <div style="font-family:var(--font-text);font-size:13px;color:var(--color-text-body);">磨砂模糊 · 边缘高光 · 透光阴影</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: 液态玻璃设计语言 — 全屏案例 -->
+    <div class="slide" data-index="6">
+      <div class="glass-scene">
+        <!-- 浮动光斑 -->
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+        <div class="orb orb-5"></div>
+
+        <div class="scene-content">
+          <div class="glass-showcase">
+            <!-- 标题 -->
+            <div class="glass-center-title">
+              <h2>Liquid Glass · 液态玻璃</h2>
+              <p>磨砂模糊 · 边缘高光 · 透光阴影 · 薄荷光晕 · 液态点击反馈</p>
+            </div>
+
+            <!-- 两列布局 -->
+            <div class="glass-row">
+              <!-- 左列 -->
+              <div class="glass-col">
+                <div class="glass-card glass-variant-heavy">
+                  <div class="glass-card-label" style="color:rgba(167,243,208,0.8);">HEAVY BLUR</div>
+                  <div class="glass-card-title">磨砂模糊</div>
+                  <div class="glass-card-value">backdrop-filter: blur(24px) saturate(200%)</div>
+                  <div class="glass-card-body">
+                    <span class="glass-tag glass-tag-blur">blur 24px</span>
+                    <span class="glass-tag glass-tag-blur">saturate 200%</span>
+                    <div style="margin-top:10px; font-size:12px; opacity:0.7;">
+                      高强度模糊 + 高饱和度，背景完全虚化为柔和色块，文字清晰可读。
+                    </div>
+                  </div>
+                </div>
+                <div class="glass-card glass-variant-mint">
+                  <div class="glass-card-label" style="color:rgba(167,243,208,0.9);">MINT GLOW</div>
+                  <div class="glass-card-title">薄荷光晕</div>
+                  <div class="glass-card-value">rgba(167, 243, 208, 0.4)</div>
+                  <div class="glass-card-body">
+                    <span class="glass-tag glass-tag-blur">green-glow</span>
+                    <span class="glass-tag glass-tag-border">折射光</span>
+                    <div style="margin-top:10px; font-size:12px; opacity:0.7;">
+                      品牌绿的透明折射，营造自然清新的呼吸感，与口腔护理主题契合。
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 右列 -->
+              <div class="glass-col">
+                <div class="glass-card glass-variant-medium">
+                  <div class="glass-card-label" style="color:rgba(168,216,234,0.8);">MEDIUM BLUR</div>
+                  <div class="glass-card-title">中度模糊</div>
+                  <div class="glass-card-value">backdrop-filter: blur(16px) saturate(180%)</div>
+                  <div class="glass-card-body">
+                    <span class="glass-tag glass-tag-blur">blur 16px</span>
+                    <span class="glass-tag glass-tag-border">glass-border 0.22</span>
+                    <div style="margin-top:10px; font-size:12px; opacity:0.7;">
+                      平衡模糊与通透，保留背景轮廓，适合卡片和浮层。
+                    </div>
+                  </div>
+                </div>
+                <div class="glass-card glass-variant-gradient">
+                  <div class="glass-card-label" style="color:rgba(255,255,255,0.6);">GRADIENT GLASS</div>
+                  <div class="glass-card-title">渐变玻璃</div>
+                  <div class="glass-card-value">linear-gradient(145deg, 0.56 → 0.18)</div>
+                  <div class="glass-card-body">
+                    <span class="glass-tag glass-tag-shadow">inner glow</span>
+                    <span class="glass-tag glass-tag-border">145deg</span>
+                    <div style="margin-top:10px; font-size:12px; opacity:0.7;">
+                      145度角渐变 + 16px inset 高光，模拟真实玻璃的曲面反光。
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: 圆角与字体体系 -->
+    <div class="slide" data-index="7">
+      <div class="slide-inner ds-layout">
+<div class="aero-bubbles">
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+</div>
+<div class="aero-light-streak s1"></div>
+<div class="aero-light-streak s2"></div>
+<div class="aero-light-streak s3"></div>
+        <div class="ds-header">
+          <div class="ds-label">RADIUS & TYPOGRAPHY</div>
+          <div class="ds-title">圆角与字体体系</div>
+        </div>
+        <div class="ds-body">
+          <div style="display:flex; gap:40px;">
+            <div style="flex:1;">
+              <div style="font-family:var(--font-text);font-size:14px;font-weight:600;color:var(--color-text-primary);margin-bottom:16px;">统一 16px 大圆角体系</div>
+              <div class="radius-row">
+                <div class="radius-box">
+                  <div class="radius-shape" style="width:48px;height:48px;border-radius:8px;"></div>
+                  <div class="radius-label">sm · 8px</div>
+                </div>
+                <div class="radius-box">
+                  <div class="radius-shape" style="width:56px;height:56px;border-radius:16px;"></div>
+                  <div class="radius-label">md · 16px</div>
+                </div>
+                <div class="radius-box">
+                  <div class="radius-shape" style="width:64px;height:64px;border-radius:20px;"></div>
+                  <div class="radius-label">lg · 20px</div>
+                </div>
+                <div class="radius-box">
+                  <div class="radius-shape" style="width:72px;height:72px;border-radius:24px;"></div>
+                  <div class="radius-label">xl · 24px</div>
+                </div>
+                <div class="radius-box">
+                  <div class="radius-shape" style="width:80px;height:40px;border-radius:20px;"></div>
+                  <div class="radius-label">胶囊形</div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-family:var(--font-text);font-size:14px;font-weight:600;color:var(--color-text-primary);margin-bottom:16px;">字体栈</div>
+              <div style="font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif; font-size:13px; color:var(--color-text-body); background:var(--color-bg-card); padding:12px 16px; border-radius:8px; line-height:1.6;">
+                -apple-system<br>
+                'PingFang SC'<br>
+                'Helvetica Neue'<br>
+                sans-serif
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:28px;">
+            <div style="font-family:var(--font-text);font-size:14px;font-weight:600;color:var(--color-text-primary);margin-bottom:12px;">字体层级</div>
+            <div class="type-scale">
+              <div class="type-row">
+                <div class="type-sample" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--color-text-primary);">大标题 Display</div>
+                <div class="type-meta">28px · 700</div>
+              </div>
+              <div class="type-row">
+                <div class="type-sample" style="font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--color-text-primary);">标题 Heading</div>
+                <div class="type-meta">20px · 600</div>
+              </div>
+              <div class="type-row">
+                <div class="type-sample" style="font-family:var(--font-text);font-size:17px;font-weight:600;color:var(--color-text-primary);">小标题 Subheading</div>
+                <div class="type-meta">17px · 600</div>
+              </div>
+              <div class="type-row">
+                <div class="type-sample" style="font-family:var(--font-text);font-size:14px;font-weight:400;color:var(--color-text-body);">正文 Body</div>
+                <div class="type-meta">14px · 400</div>
+              </div>
+              <div class="type-row">
+                <div class="type-sample" style="font-family:var(--font-text);font-size:12px;font-weight:400;color:var(--color-text-body);">辅助文字 Caption</div>
+                <div class="type-meta">12px · 400</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: 页面结构 -->
+    <div class="slide" data-index="8">
+      <div class="slide-inner ds-layout">
+<div class="aero-bubbles">
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+</div>
+<div class="aero-light-streak s1"></div>
+<div class="aero-light-streak s2"></div>
+<div class="aero-light-streak s3"></div>
+        <div class="ds-header">
+          <div class="ds-label">PAGE STRUCTURE</div>
+          <div class="ds-title">页面结构与导航</div>
+        </div>
+        <div class="ds-body">
+          <div style="font-family:var(--font-text);font-size:14px;font-weight:600;color:var(--color-text-primary);margin-bottom:12px;">页面流转</div>
+          <div class="page-flow">
+            <div class="page-flow-item" style="background:linear-gradient(135deg,#3A8D5E,#7ABF95);color:#fff;">闪屏页</div>
+            <div class="page-flow-arrow">→</div>
+            <div class="page-flow-item">首页</div>
+            <div class="page-flow-arrow">→</div>
+            <div class="page-flow-item">列表页</div>
+            <div class="page-flow-arrow">→</div>
+            <div class="page-flow-item">详情页</div>
+            <div class="page-flow-arrow">→</div>
+            <div class="page-flow-item">购物车</div>
+            <div class="page-flow-arrow">→</div>
+            <div class="page-flow-item">个人中心</div>
+          </div>
+          <div style="margin-top:28px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
+            <div style="background:var(--color-bg-card);border-radius:12px;padding:20px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> 首页</div>
+              <div style="font-family:var(--font-text);font-size:12px;color:var(--color-text-body);line-height:1.5;">搜索栏 · 轮播图 · 分类网格 · 横向商品滚动 · 推荐网格</div>
+            </div>
+            <div style="background:var(--color-bg-card);border-radius:12px;padding:20px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> 列表页</div>
+              <div style="font-family:var(--font-text);font-size:12px;color:var(--color-text-body);line-height:1.5;">分类 Tabs · 排序栏 · 双列商品网格 · 筛选</div>
+            </div>
+            <div style="background:var(--color-bg-card);border-radius:12px;padding:20px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 详情页</div>
+              <div style="font-family:var(--font-text);font-size:12px;color:var(--color-text-body);line-height:1.5;">商品大图 · 价格 · 规格选择 · 数量 · 评价 · 底部操作栏</div>
+            </div>
+            <div style="background:var(--color-bg-card);border-radius:12px;padding:20px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> 购物车</div>
+              <div style="font-family:var(--font-text);font-size:12px;color:var(--color-text-body);line-height:1.5;">商品列表 · 数量编辑 · 底部结算栏 · 全选</div>
+            </div>
+            <div style="background:var(--color-bg-card);border-radius:12px;padding:20px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 个人中心</div>
+              <div style="font-family:var(--font-text);font-size:12px;color:var(--color-text-body);line-height:1.5;">头像 · 订单入口 · 工具列表 · 设置</div>
+            </div>
+            <div style="background:var(--color-bg-card);border-radius:12px;padding:20px;">
+              <div style="font-family:var(--font-text);font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> 底部 Tab</div>
+              <div style="font-family:var(--font-text);font-size:12px;color:var(--color-text-body);line-height:1.5;">首页 · 分类 · 购物车 · 我的 · 玻璃背景</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: 组件风格 -->
+    <div class="slide" data-index="9">
+      <div class="slide-inner ds-layout">
+<div class="aero-bubbles">
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+  <div class="aero-bubble"></div><div class="aero-bubble"></div><div class="aero-bubble"></div>
+</div>
+<div class="aero-light-streak s1"></div>
+<div class="aero-light-streak s2"></div>
+<div class="aero-light-streak s3"></div>
+        <div class="ds-header">
+          <div class="ds-label">COMPONENTS</div>
+          <div class="ds-title">核心组件风格</div>
+        </div>
+        <div class="ds-body">
+          <div class="comp-grid">
+            <div class="comp-card">
+              <div class="comp-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+              <div class="comp-name">玻璃卡片</div>
+              <div class="comp-desc">白色毛玻璃背景<br>模糊 + 顶部高光渐变<br>border: 1px solid rgba(255,255,255,0.55)</div>
+            </div>
+            <div class="comp-card">
+              <div class="comp-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/></svg></div>
+              <div class="comp-name">胶囊按钮</div>
+              <div class="comp-desc">大圆角 24px<br>玻璃高光 + 渐变背景<br>点击 scale(0.96)</div>
+            </div>
+            <div class="comp-card">
+              <div class="comp-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+              <div class="comp-name">搜索框</div>
+              <div class="comp-desc">圆角胶囊 20px<br>半透明背景<br>glass border + shadow</div>
+            </div>
+            <div class="comp-card">
+              <div class="comp-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+              <div class="comp-name">Tab 导航</div>
+              <div class="comp-desc">底部固定 · 玻璃背景<br>backdrop-filter: blur(20px)<br>active: 绿色渐变胶囊</div>
+            </div>
+            <div class="comp-card">
+              <div class="comp-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <div class="comp-name">价格标签</div>
+              <div class="comp-desc">红色 #E8534A<br>粗体 16-28px<br>划线原价 + 折扣标签</div>
+            </div>
+            <div class="comp-card">
+              <div class="comp-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5V8a1 1 0 0 0-2 0v5a2.5 2.5 0 0 1-5 0v-1a1 1 0 0 0-2 0v3.84"/><path d="M7 12.5V18a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6"/></svg></div>
+              <div class="comp-name">交互反馈</div>
+              <div class="comp-desc">scale(0.94-0.96)<br>cubic-bezier(0.4, 0, 0.2, 1)<br>transition: 0.3s</div>
+            </div>
+          </div>
+          <div style="margin-top:24px; background:var(--color-bg-card); border-radius:12px; padding:20px 24px;">
+            <div style="font-family:var(--font-text);font-size:14px;font-weight:600;color:var(--color-text-primary);margin-bottom:8px;">设计原则总结</div>
+            <div style="font-family:var(--font-text);font-size:13px;color:var(--color-text-body);line-height:1.7;">
+              <strong>生态自然风</strong> × <strong>液态玻璃</strong> — 绿色系传递健康自然，玻璃效果增加现代科技感。<br>
+              统一 16px 大圆角 + 胶囊形态，营造柔和亲和的视觉感受。<br>
+              品牌红 <code style="font-family:'SF Mono',monospace;font-size:12px;background:rgba(0,113,227,0.08);padding:2px 6px;border-radius:4px;color:var(--color-blue);">#E30000</code> 仅用于 CTA 按钮，克制使用形成视觉焦点。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <button class="nav-btn" id="btnPrev" disabled>‹</button>
+  <button class="nav-btn" id="btnNext">›</button>
+  <div class="page-indicator" id="pageIndicator">01 / 05</div>
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const indicator = document.getElementById('pageIndicator');
+    const progressBar = document.getElementById('progressBar');
+    function goTo(n) {
+      if (n < 0 || n >= total) return;
+      slides[current].classList.remove('active');
+      current = n;
+      slides[current].classList.add('active');
+      updateUI();
+    }
+    function updateUI() {
+      indicator.textContent = String(current + 1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+      progressBar.style.width = ((current + 1) / total * 100) + '%';
+      btnPrev.disabled = current === 0;
+      btnNext.disabled = current === total - 1;
+    }
+    btnPrev.addEventListener('click', () => goTo(current - 1));
+    btnNext.addEventListener('click', () => goTo(current + 1));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goTo(current + 1); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+    });
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) { diff > 0 ? goTo(current + 1) : goTo(current - 1); }
+    });
+    window.goTo = goTo;
+    goTo(0);
+
+    // Floating card hover system
+    const overlay = document.getElementById('cardOverlay');
+    const floatIcon = document.getElementById('floatIcon');
+    const floatTitle = document.getElementById('floatTitle');
+    const floatSub = document.getElementById('floatSub');
+    const floatBody = document.getElementById('floatBody');
+
+    const cardContents = [
+      { // 性别分布
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>',
+        title: '性别分布',
+        sub: '女性58% · 男性42%',
+        body: '<div class="floating-chart-legend"><div class="floating-chart-legend-item"><div class="floating-chart-legend-dot" style="background:var(--color-blue)"></div>女性</div><div class="floating-chart-legend-item"><div class="floating-chart-legend-dot" style="background:rgb(255,159,10)"></div>男性</div></div><div class="floating-chart-row"><div class="floating-chart-label">美白/去黄</div><div class="floating-chart-bars"><div class="floating-chart-bar-wrap"><div class="floating-chart-bar female" style="width:68%"></div><span class="floating-chart-pct">68%</span></div><div class="floating-chart-bar-wrap"><div class="floating-chart-bar male" style="width:45%"></div><span class="floating-chart-pct">45%</span></div></div></div><div class="floating-chart-row"><div class="floating-chart-label">成分安全</div><div class="floating-chart-bars"><div class="floating-chart-bar-wrap"><div class="floating-chart-bar female" style="width:62%"></div><span class="floating-chart-pct">62%</span></div><div class="floating-chart-bar-wrap"><div class="floating-chart-bar male" style="width:31%"></div><span class="floating-chart-pct">31%</span></div></div></div><div class="floating-chart-row"><div class="floating-chart-label">清新口气</div><div class="floating-chart-bars"><div class="floating-chart-bar-wrap"><div class="floating-chart-bar female" style="width:59%"></div><span class="floating-chart-pct">59%</span></div><div class="floating-chart-bar-wrap"><div class="floating-chart-bar male" style="width:55%"></div><span class="floating-chart-pct">55%</span></div></div></div><div class="floating-chart-row"><div class="floating-chart-label">抗敏/防蛀</div><div class="floating-chart-bars"><div class="floating-chart-bar-wrap"><div class="floating-chart-bar female" style="width:40%"></div><span class="floating-chart-pct">40%</span></div><div class="floating-chart-bar-wrap"><div class="floating-chart-bar male" style="width:52%"></div><span class="floating-chart-pct">52%</span></div></div></div><div class="floating-chart-row"><div class="floating-chart-label">性价比</div><div class="floating-chart-bars"><div class="floating-chart-bar-wrap"><div class="floating-chart-bar female" style="width:35%"></div><span class="floating-chart-pct">35%</span></div><div class="floating-chart-bar-wrap"><div class="floating-chart-bar male" style="width:58%"></div><span class="floating-chart-pct">58%</span></div></div></div>'
+      },
+      { // 年龄结构
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="9" y1="13" x2="15" y2="13"/></svg>',
+        title: '年龄结构',
+        sub: '18-35岁是核心客群',
+        body: '<div class="floating-text-body">核心消费群体集中在 <strong>18-35岁</strong> 的年轻人群。<br><br>• <strong>00后</strong>（18-23岁）占 15%<br>• <strong>95后</strong>（24-28岁）占 15%<br>• <strong>90后</strong>（29-33岁）占 25%<br>• <strong>85后</strong>（34-38岁）占 20%<br>• <strong>80后+</strong>（熟龄人群）占 25%</div>'
+      },
+      { // 职业特征
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>',
+        title: '职业特征',
+        sub: '白领 · 主妇 · 基层从业者',
+        body: '<div class="floating-occ-row"><div class="floating-occ-label">白领/企业职员</div><div style="flex:1;display:flex;align-items:center;gap:8px;"><div class="floating-occ-bar" style="width:76%;background:var(--color-blue)"></div><span class="floating-occ-pct">38%</span></div></div><div class="floating-occ-row"><div class="floating-occ-label">基层从业者</div><div style="flex:1;display:flex;align-items:center;gap:8px;"><div class="floating-occ-bar" style="width:52%;background:#34C759"></div><span class="floating-occ-pct">26%</span></div></div><div class="floating-occ-row"><div class="floating-occ-label">全职主妇/妈妈</div><div style="flex:1;display:flex;align-items:center;gap:8px;"><div class="floating-occ-bar" style="width:44%;background:rgb(255,159,10)"></div><span class="floating-occ-pct">22%</span></div></div><div class="floating-occ-row"><div class="floating-occ-label">学生</div><div style="flex:1;display:flex;align-items:center;gap:8px;"><div class="floating-occ-bar" style="width:22%;background:#AF52DE"></div><span class="floating-occ-pct">11%</span></div></div><div class="floating-occ-row"><div class="floating-occ-label">其他</div><div style="flex:1;display:flex;align-items:center;gap:8px;"><div class="floating-occ-bar" style="width:6%;background:rgba(0,0,0,0.2)"></div><span class="floating-occ-pct">3%</span></div></div>'
+      },
+      { // 收入水平
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M10 8v8"/><path d="M14 8v8"/></svg>',
+        title: '收入水平',
+        sub: '中低收入 · 追求质价比',
+        body: '<div class="floating-text-body">消费者收入集中在 <strong>中等偏低</strong> 水平，对价格敏感但又不愿妥协于基础功效。<br><br>核心诉求是 <strong>"质价比"</strong> — 在可接受的价格范围内追求最好的品质和功效，拒绝为品牌溢价买单。</div>'
+      },
+      { // 地域分布
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+        title: '地域分布',
+        sub: '二线及以下占58%',
+        body: '<div class="floating-text-body"><strong>下沉市场</strong> 是牙膏消费的主力战场。<br><br>• 二线及以下城市用户占比 <strong>58%</strong><br>• 一线城市占 22%<br>• 新一线城市占 20%<br><br>渠道布局需要重点关注下沉市场的渗透。</div>'
+      },
+      { // 行为偏好
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+        title: '行为偏好',
+        sub: '重口碑 · 重实效 · 短链路',
+        body: '<ul class="floating-list"><li>购买动机聚焦防蛀、美白等实际功效</li><li>信息获取高度依赖电商评价与社交媒体真实用户分享</li><li>决策链路短，注重口碑与实效</li><li>对价格敏感但不妥协于基础功效</li><li>追求"质价比"，拒绝品牌溢价</li></ul>'
+      }
+    ];
+
+    document.querySelectorAll('.profile-trait-icon').forEach((icon, i) => {
+      icon.addEventListener('mouseenter', function() {
+        const data = cardContents[i];
+        if (!data) return;
+        floatIcon.innerHTML = data.icon;
+        floatTitle.textContent = data.title;
+        floatSub.textContent = data.sub;
+        floatBody.innerHTML = data.body;
+        overlay.classList.add('active');
+      });
+      icon.addEventListener('mouseleave', function() {
+        overlay.classList.remove('active');
+      });
+    });
+
+/* ====== 加载动画 ====== */
+(function(){
+  var ls = document.getElementById('loading-screen');
+  function hide() { if(ls) { ls.classList.add('hide'); setTimeout(function(){ ls.style.display='none'; }, 400); } }
+  if(document.readyState === 'complete') { hide(); }
+  else { window.addEventListener('load', hide); }
+  setTimeout(hide, 2500);
+})();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
