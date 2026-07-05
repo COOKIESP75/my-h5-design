@@ -3697,10 +3697,13 @@ html, body {
   <div class="loading-text">纳爱斯口腔护理</div>
 </div>
 <script>
-window.addEventListener('load', function(){
+(function(){
   var ls = document.getElementById('loading-screen');
-  if(ls) { ls.classList.add('hide'); setTimeout(function(){ ls.style.display='none'; }, 500); }
-});
+  function hide() { if(ls) { ls.classList.add('hide'); setTimeout(function(){ ls.style.display='none'; }, 400); } }
+  if(document.readyState === 'complete') { hide(); }
+  else { window.addEventListener('load', hide); }
+  setTimeout(hide, 2500);
+})();
 </script>
 
   <svg class="liquid-glass-svg" width="0" height="0" aria-hidden="true" focusable="false">
@@ -4175,7 +4178,7 @@ window.addEventListener('load', function(){
   </div> <!-- end #app -->
   </div> <!-- end .device-frame -->
 
-  <script defer>
+  <script>
 /* ==========================================
     纳爱斯口腔护理 · 品牌商城 JS
     交互逻辑：路由、渲染、购物车CRUD、搜索
