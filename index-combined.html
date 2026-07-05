@@ -3702,7 +3702,7 @@ html, body {
   function hide() { if(ls) { ls.classList.add('hide'); setTimeout(function(){ ls.style.display='none'; }, 400); } }
   if(document.readyState === 'complete') { hide(); }
   else { window.addEventListener('load', hide); }
-  setTimeout(hide, 2500);
+  setTimeout(hide, 1200);
 })();
 </script>
 
@@ -3725,6 +3725,7 @@ html, body {
     <!-- 状态栏 -->
       <div class="status-bar">
         <span class="status-time">9:41</span>
+        <span style="font-size:11px;margin-left:6px;opacity:0.5">2026.07.05 周日</span>
         <div class="status-right">
           <!-- 信号 SVG -->
           <svg viewBox="0 0 18 18" width="16" height="16">
